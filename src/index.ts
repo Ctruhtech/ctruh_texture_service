@@ -13,7 +13,6 @@ import { setupMetrics } from "./metrics";
 const app = express();
 const port = APP_PORT || 9000;
 
-app.use(cors()); // Enable CORS with default settings
 app.use(express.json());
 
 mongoose

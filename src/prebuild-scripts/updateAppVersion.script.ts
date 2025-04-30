@@ -3,7 +3,6 @@ import fs from "fs";
 import path from "path";
 import util from "util";
 import packageJson from "../../package.json";
-import logger from "../logger/logger";
 
 // Promisify exec for better async handling
 const execPromise = util.promisify(exec);
@@ -23,7 +22,7 @@ async function updateVersion() {
         const date = new Date(lastCommitDate);
         formattedDate = `${date.getFullYear()}.${(date.getMonth() + 1).toString().padStart(2, "0")}.${date.getDate().toString().padStart(2, "0")}`;
     } catch (error) {
-        logger.error("Failed to get last commit date from git. Falling back to the current date.");
+        console.error("Failed to get last commit date from git. Falling back to the current date.");
         // If git fails, use the current date
         const now = new Date();
         formattedDate = `${now.getFullYear()}.${(now.getMonth() + 1).toString().padStart(2, "0")}.${now.getDate().toString().padStart(2, "0")}`;
@@ -39,12 +38,12 @@ async function updateVersion() {
     try {
         // Format package.json using npx prettier
         await execPromise("npx prettier --write package.json");
-        logger.info(`Formatted package.json using Prettier.`);
+        console.info(`Formatted package.json using Prettier.`);
     } catch (error) {
-        logger.error("Failed to format package.json using Prettier.");
+        console.error("Failed to format package.json using Prettier.");
     }
 
-    logger.info(`Version updated to ${formattedDate}`);
+    console.info(`Version updated to ${formattedDate}`);
 }
 
-updateVersion().catch(err => logger.error("Unexpected error:", err));
+updateVersion().catch(err => console.error("Unexpected error:", err));
