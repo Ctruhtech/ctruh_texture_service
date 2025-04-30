@@ -1,12 +1,11 @@
-import { createLogger, format, transports } from "winston";
-import { getAppMetaData } from "../lib/helpers/app.helper";
-import sourceMapSupport from "source-map-support";
 import path from "path";
+import sourceMapSupport from "source-map-support";
+import { createLogger, format, transports } from "winston";
 import LokiTransport from "winston-loki";
 import { APP_NAME, LOKI_AUTH_CREDENTIAL, LOKI_URL, NODE_ENV } from "../config";
+import { connectToMongoDB } from "../db/connection";
+import { getAppMetaData } from "../lib/helpers/app.helper";
 import { isDevEnv } from "../lib/helpers/auth.helper";
-import ErrorLogService from "../service/textureErrorLogsService";
-import { ITextureErrorLogs } from "../db/models/textureErrorLogsModel";
 
 // Enable source map support
 sourceMapSupport.install();
@@ -129,20 +128,23 @@ logger.on("data", async log => {
     if (log.level === "error") {
         try {
             if (isDevEnv()) return;
+
+            const db = await connectToMongoDB(`${APP_NAME}_error_logs`);
+            const collection = db.collection(`${NODE_ENV}_${APP_NAME}_${appMeta.name}_logs`);
             const { timestamp, level, message, stack, name } = log;
             const { fileName, lineNumber } = stack ? extractFileNameAndLineNumber(stack) : { fileName: "N/A", lineNumber: "N/A" };
             const errorDetails = {
                 timestamp: formatTimestamp(timestamp), // Convert timestamp to readable format
                 level,
                 message,
-                stack: stack ?? null,
-                name: name ?? null,
+                stack,
+                name,
                 fileName,
                 lineNumber,
-            } as ITextureErrorLogs;
-            await ErrorLogService.createErrorLog(errorDetails);
+            };
+            await collection.insertOne(errorDetails);
         } catch (err) {
-            logger.error("Failed to log to MongoDB", err);
+            console.error("Failed to log to MongoDB", err);
         }
     }
 });

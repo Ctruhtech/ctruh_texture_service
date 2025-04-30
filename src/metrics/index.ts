@@ -23,7 +23,7 @@ const handleMetrics = async (req: Request, res: Response) => {
 export const setupMetrics = async (app?: Express) => {
     try {
         // Uncomment below later
-        // if (isDevEnv()) return;
+        if (isDevEnv()) return;
 
         // Register default metrics
         const collectDefaultMetrics = client.collectDefaultMetrics;
