@@ -20,6 +20,9 @@ pipeline {
 		    script {
                     	writeFile file: 'envfile', text: "${params.EnvVariables}"
                     	writeFile file: './env', text: "${params.EnvVariables}"
+                    	writeFile file: './.env', text: "${params.EnvVariables}"
+                    	writeFile file: './.env.production', text: "${params.EnvVariables}"
+
                     }
                 }
             }
