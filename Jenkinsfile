@@ -2,8 +2,8 @@ pipeline {
     environment {
     registry = "ctruh.azurecr.io/backend/ctruh_texture_service"
     containername = "ctruh_texture_service"
-    http_port = "9003"
-    running_port = "9003"
+    http_port = "9002"
+    running_port = "9002"
     registryCredential = 'acrid'
     dockerImage = ''
     }
