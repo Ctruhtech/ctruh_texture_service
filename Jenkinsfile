@@ -12,7 +12,7 @@ pipeline {
     stages {
             stage('Cloning our Git') {
                 steps {
-                git branch: params.branch , url: 'git@github.com:Ctruhtech/ctruh_backend_node_gateway.git'
+                git branch: params.branch , url: 'git@github.com:Ctruhtech/ctruh_texture_service.git'
                 }
             }
 	     stage('set Environment File') {
